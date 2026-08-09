@@ -33,7 +33,7 @@ sysl build repl.sysl --lib ../ogol -o ogol-repl
 
 **`sysl run` will not do**, and the reason is a compiler defect rather than anything here: it does
 not connect the program's standard input, so the console reads end-of-input at once and exits after
-printing its banner. Card `0054`. Build it and run the binary.
+printing its banner. Card `0056`. Build it and run the binary.
 
 ## Licence
 
