@@ -1,0 +1,53 @@
+// Ogol at a desktop terminal — the console the language is meant to be met through, on a machine
+// where it can be tried without a board in the way.
+//
+// **It is deliberately thin, and everything interesting is in the package.** Reading a line, deciding
+// whether the line finished, and printing what came back is the whole of a console's job; the same
+// twenty lines against `sh.sysl.pico2.read_line` is the one that runs over a serial cable. Keeping the
+// two apart is what lets the language be developed here and shipped there.
+//
+// The one thing this shows that the tests cannot is the **continuation prompt**, which is the reason
+// `Fault` has two sides. A line that stops inside a `[` or before an `end` has not gone wrong, so it
+// is held and the next line is added to it; anything else is a refusal, printed and dropped.
+
+import sh.sysl.ogol.*
+import sysl.io.{stdin, console_lines}
+
+// The whole session, in one function so that the state is local: a program's top-level `var` is module
+// storage, which has to state its type and lives for the run, and none of this wants either.
+session()
+    var input = stdin()
+    var cursor = console_lines(&input)
+    var interp = ogol()
+
+    // What has been typed and not yet run, because it was not finished. Empty is the ordinary state.
+    var pending = ""
+
+    print("Ogol. Type a line, or 'bye' to leave.")
+    prints("ogol> ")
+
+    for line in cursor
+        if pending == "" && line == "bye" then break
+
+        var src = if pending == "" then line else pending + "\n" + line
+
+        pending = ""
+
+        run(interp, src) match
+            // A command answers with nothing, and a console that echoed a blank line for every
+            // `print` would double every program's output.
+            Ok(v) ->
+                v match
+                    Nothing -> ()
+                    _ -> print(render(v))
+            Err(f) ->
+                f match
+                    More -> pending = src
+                    Bad(message) -> print(message)
+
+        prints(if pending == "" then "ogol> " else ".... ")
+
+    print("")
+end session
+
+session()
