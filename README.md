@@ -31,9 +31,9 @@ the language can be developed here and shipped there.
 sysl build repl.sysl --lib ../ogol -o ogol-repl
 ```
 
-**`sysl run` will not do**, and the reason is a compiler defect rather than anything here: it does
-not connect the program's standard input, so the console reads end-of-input at once and exits after
-printing its banner. Card `0056`. Build it and run the binary.
+**`sysl run` works from sysl 0.0.37**, which is the release that connected the program's standard
+input — before it, the console read end-of-input at once and exited after printing its banner, which
+was card `0056`. On an older compiler, build it and run the binary.
 
 ## Licence
 
