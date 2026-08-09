@@ -2,9 +2,14 @@
 // where it can be tried without a board in the way.
 //
 // **It is deliberately thin, and everything interesting is in the package.** Reading a line, deciding
-// whether the line finished, and printing what came back is the whole of a console's job; the same
-// twenty lines against `sh.sysl.pico2.read_line` is the one that runs over a serial cable. Keeping the
-// two apart is what lets the language be developed here and shipped there.
+// whether the line finished, and printing what came back is the whole of a console's job.
+//
+// **The board's console is now this file with its first six lines swapped**, and that is the point of
+// the shape below. `session` takes a `*Iterate[string]` and does not care what is producing the
+// lines: at a terminal in cbreak mode that is a `sysl.term.edit.Editor`, over a serial cable it is
+// the same `Editor` over the port, and on a pipe it is `sysl.io`'s cooked line cursor. The language
+// is developed here, where a test suite runs in fifty milliseconds, and shipped to a board that
+// cannot run one.
 //
 // The one thing this shows that the tests cannot is the **continuation prompt**, which is the reason
 // `Fault` has two sides. A line that stops inside a `[` or before an `end` has not gone wrong, so it
@@ -12,12 +17,15 @@
 
 import sh.sysl.ogol.*
 import sysl.io.{stdin, console_lines}
+import sysl.term.edit.editor
+import sysl.term.tty.{raw, cooked, tty_writer}
 
-// The whole session, in one function so that the state is local: a program's top-level `var` is module
-// storage, which has to state its type and lives for the run, and none of this wants either.
-session()
-    var input = stdin()
-    var cursor = console_lines(&input)
+// The whole session, over whatever is handing it lines.
+//
+// **`*Iterate[string]` is what makes one loop serve every console.** An `Editor` and a `Lines` are
+// both one, so the platform decides which to build and nothing below this line knows the difference —
+// which is the whole of what keeps the desktop console and the board's from drifting apart.
+session(cursor: *Iterate[string])
     var interp = ogol()
 
     // What has been typed and not yet run, because it was not finished. Empty is the ordinary state.
@@ -50,4 +58,24 @@ session()
     print("")
 end session
 
-session()
+// Which console this is, which is the only platform-dependent code here.
+//
+// **`raw` failing is not an error — it is the other situation.** At a terminal it puts the kernel out
+// of the way so the editor can see a keystroke as it is typed; with input redirected from a file or a
+// pipe there is no terminal to change, and then the editor is the wrong facility entirely: nothing is
+// being typed, nothing should be echoed, and `console_lines` is what reads a stream of lines.
+//
+// So `ogol-repl < script.ogol` still works, and works *better* than it would through an editor.
+var input = stdin()
+
+if raw()
+    // `tty_writer` and not `stdout`, because what the editor echoes has to appear as it is typed
+    // rather than when a newline eventually flushes the buffer.
+    var ed = editor(&input, tty_writer())
+
+    session(&ed)
+    cooked()
+else
+    var cursor = console_lines(&input)
+
+    session(&cursor)
