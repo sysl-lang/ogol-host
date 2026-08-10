@@ -1,0 +1,40 @@
+// Ogol at a hosted terminal — the console the language is meant to be met through, on a machine
+// where it can be tried without a board in the way.
+//
+// **Everything interesting is in the package.** The read-run-print loop is `sh.sysl.ogol.session`,
+// because there is more than one console — this, a Pico 2 W over a serial cable, an STM32 coming, and
+// the Pico's other core — and a loop written out per platform is copies that drift. What is left here
+// is the only platform-dependent part: which streams the lines come from.
+//
+// `host` rather than `desktop` or `mac` because that is sysl's own word for it — `Target.host`, and
+// "a hosted program" throughout the library. This builds anywhere hosted.
+
+import sh.sysl.ogol.*
+import sysl.io.{stdin, console_lines}
+import sysl.term.edit.editor
+import sysl.term.tty.{raw, cooked, tty_writer}
+
+// Which console this is, which is the only platform-dependent code here.
+//
+// **`raw` failing is not an error — it is the other situation.** At a terminal it puts the kernel out
+// of the way so the editor can see a keystroke as it is typed; with input redirected from a file or a
+// pipe there is no terminal to change, and then the editor is the wrong facility entirely: nothing is
+// being typed, nothing should be echoed, and `console_lines` is what reads a stream of lines.
+//
+// So `ogol-host < script.ogol` still works, and works *better* than it would through an editor.
+var interp = ogol()
+var input = stdin()
+
+print("Ogol. Type a line, or 'bye' to leave.")
+
+if raw()
+    // `tty_writer` and not `stdout`, because what the editor echoes has to appear as it is typed
+    // rather than when a newline eventually flushes the buffer.
+    var ed = editor(&input, tty_writer())
+
+    session(interp, &ed)
+    cooked()
+else
+    var cursor = console_lines(&input)
+
+    session(interp, &cursor)

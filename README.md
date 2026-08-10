@@ -1,10 +1,10 @@
-# ogol-repl
+# ogol-host
 
-Ogol at a desktop terminal — a console for [the language](https://github.com/sysl-lang/ogol), on a
+Ogol at a hosted terminal — a console for [the language](https://github.com/sysl-lang/ogol), on a
 machine where it can be tried without a board in the way.
 
 ```
-$ ogol-repl
+$ ogol-host
 Ogol. Type a line, or 'bye' to leave.
 ogol> print 2 + 3 * 4
 14
@@ -16,16 +16,18 @@ ogol> print double 21
 ogol> bye
 ```
 
-**It is deliberately thin.** Reading a line, deciding whether the line finished, and printing what
-came back is the whole of a console's job — thirty lines, of which the interesting one is that a
-`Fault` of `More` holds the text and prompts `....` instead of complaining.
+**Almost nothing is here.** The read-run-print loop is `sh.sysl.ogol.session`, in the language
+package, because there is more than one console — this one, a Pico 2 W over a serial cable, an STM32
+coming, and the Pico's other core. A loop written out per platform is copies that drift.
 
-**`session` takes a `*Iterate[string]` and does not care what is producing the lines**, which is what
-makes the board's console the same program: at a terminal that is a `sysl.term.edit.Editor` over
-standard input in cbreak mode, over a serial cable it is the same editor over the port, and on a pipe
-it is `sysl.io`'s cooked line cursor. The platform-dependent code is the six lines at the bottom of
-`repl.sysl` that ask `sysl.term.tty.raw` whether there is a terminal to take over and build one or the
-other from the answer.
+What is left in this repository is the only platform-dependent part: **which streams the lines come
+from**. `session` takes a `*Iterate[string]` and does not care — at a terminal that is a
+`sysl.term.edit.Editor` over standard input in cbreak mode, and on a pipe it is `sysl.io`'s cooked
+line cursor. Those few lines ask `sysl.term.tty.raw` whether there is a terminal to take over and
+build one or the other from the answer.
+
+**`host` rather than `desktop` or `mac`** because that is sysl's own word — `Target.host`, and "a
+hosted program" throughout the library. It builds anywhere hosted.
 
 **`raw()` refusing is not an error.** With input redirected there is nothing to change and an editor
 is the wrong facility anyway — nothing is being typed and nothing should be echoed — so
@@ -39,7 +41,7 @@ work, in both of the spellings a terminal sends its arrow keys.
 The language is an ordinary coordinate in `package.hocon`, so this builds from a fresh clone:
 
 ```
-sysl build repl.sysl -o ogol-repl
+sysl build ogol-host.sysl -o ogol-host
 ```
 
 It arrived by `--lib` from a checkout that had to be sitting beside this one until `sysl-lang/ogol`

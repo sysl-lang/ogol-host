@@ -1,12 +1,12 @@
 // Ogol at a desktop terminal.
 
 package {
-  name    = "ogol-repl"
-  version = "0.1.0"
+  name    = "ogol-host"
+  version = "0.2.0"
 }
 
 // The language is an ordinary coordinate, so this builds from a fresh clone. It arrived by `--lib`
 // from a checkout beside this one until `sysl-lang/ogol` was tagged v0.1.0 on 2026-08-10.
 dependencies {
-  ogol { git = "github.com/sysl-lang/ogol", version = "0.1.0" }
+  ogol { git = "github.com/sysl-lang/ogol", version = "0.2.0" }
 }
