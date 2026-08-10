@@ -36,12 +36,14 @@ work, in both of the spellings a terminal sends its arrow keys.
 
 ## Building
 
-`sysl-lang/ogol` is not tagged yet, so it arrives as a source root rather than as a coordinate, and
-**this does not build from a fresh clone without the checkout beside it**:
+The language is an ordinary coordinate in `package.hocon`, so this builds from a fresh clone:
 
 ```
-sysl build repl.sysl --lib ../ogol -o ogol-repl
+sysl build repl.sysl -o ogol-repl
 ```
+
+It arrived by `--lib` from a checkout that had to be sitting beside this one until `sysl-lang/ogol`
+was tagged `v0.1.0`.
 
 **Needs sysl 0.0.38 or newer**, which is where `sysl.term.edit` and `sysl.term.tty.raw` ship.
 
