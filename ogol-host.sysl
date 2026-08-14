@@ -12,7 +12,7 @@
 import sh.sysl.ogol.*
 import sysl.io.{stdin, console_lines}
 import sysl.term.edit.editor
-import sysl.term.tty.{raw, cooked, tty_writer}
+import sysl.posix.tty.{raw, cooked, tty_writer}
 
 // Which console this is, which is the only platform-dependent code here.
 //

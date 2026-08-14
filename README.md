@@ -23,7 +23,7 @@ coming, and the Pico's other core. A loop written out per platform is copies tha
 What is left in this repository is the only platform-dependent part: **which streams the lines come
 from**. `session` takes a `*Iterate[string]` and does not care — at a terminal that is a
 `sysl.term.edit.Editor` over standard input in cbreak mode, and on a pipe it is `sysl.io`'s cooked
-line cursor. Those few lines ask `sysl.term.tty.raw` whether there is a terminal to take over and
+line cursor. Those few lines ask `sysl.posix.tty.raw` whether there is a terminal to take over and
 build one or the other from the answer.
 
 **`host` rather than `desktop` or `mac`** because that is sysl's own word — `Target.host`, and "a
@@ -47,7 +47,9 @@ sysl build ogol-host.sysl -o ogol-host
 It arrived by `--lib` from a checkout that had to be sitting beside this one until `sysl-lang/ogol`
 was tagged `v0.1.0`.
 
-**Needs sysl 0.0.38 or newer**, which is where `sysl.term.edit` and `sysl.term.tty.raw` ship.
+**Needs sysl 0.0.51 or newer**, which is where the terminal module became `sysl.posix.tty`. The
+facilities themselves are older — `sysl.term.edit` and `raw` ship in 0.0.38 — but the import path
+above does not resolve before 0.0.51.
 
 **Build it and run the binary rather than using `sysl run`.** `sysl run` gained the program's standard
 input in 0.0.37 (card `0056`), which is enough for a program that reads a pipe — but it does not pass
