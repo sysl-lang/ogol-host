@@ -2,11 +2,16 @@
 
 package {
   name    = "ogol-host"
-  version = "0.2.0"
+  version = "0.3.1"
 }
 
 // The language is an ordinary coordinate, so this builds from a fresh clone. It arrived by `--lib`
 // from a checkout beside this one until `sysl-lang/ogol` was tagged v0.1.0 on 2026-08-10.
+//
+// **ogol v0.3.0 is what makes a refusal point at something.** Its reader moved onto
+// `sh.sysl.parsing`, so every token carries the span it was written at and `session` draws the line
+// and a caret under the word rather than printing a sentence on its own. Nothing here changed for it:
+// the loop is the language's, and this program still only says which streams the lines come from.
 dependencies {
-  ogol { git = "github.com/sysl-lang/ogol", version = "0.2.0" }
+  ogol { git = "github.com/sysl-lang/ogol", version = "0.3.1" }
 }
