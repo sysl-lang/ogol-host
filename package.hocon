@@ -13,5 +13,5 @@ package {
 // and a caret under the word rather than printing a sentence on its own. Nothing here changed for it:
 // the loop is the language's, and this program still only says which streams the lines come from.
 dependencies {
-  ogol { git = "github.com/sysl-lang/ogol", version = "0.3.1" }
+  ogol { git = "github.com/sysl-lang/ogol", version = "0.3.2" }
 }
