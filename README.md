@@ -38,7 +38,7 @@ work, in both of the spellings a terminal sends its arrow keys.
 
 ## Building
 
-The language is an ordinary coordinate in `package.hocon`, so this builds from a fresh clone:
+The language is an ordinary coordinate in `sysl.hocon`, so this builds from a fresh clone:
 
 ```
 sysl build ogol-host.sysl -o ogol-host
